@@ -1,19 +1,20 @@
 package com.icatw.wallpaper.service;
 
-import java.util.List;
 import com.icatw.wallpaper.domain.WallpaperPaper;
+
+import java.util.List;
 
 /**
  * 壁纸列表Service接口
- * 
+ *
  * @author icatw
  * @date 2022-10-04
  */
-public interface IWallpaperPaperService 
+public interface IWallpaperPaperService
 {
     /**
      * 查询壁纸列表
-     * 
+     *
      * @param paperId 壁纸列表主键
      * @return 壁纸列表
      */
@@ -21,7 +22,7 @@ public interface IWallpaperPaperService
 
     /**
      * 查询壁纸列表列表
-     * 
+     *
      * @param wallpaperPaper 壁纸列表
      * @return 壁纸列表集合
      */
@@ -29,7 +30,7 @@ public interface IWallpaperPaperService
 
     /**
      * 新增壁纸列表
-     * 
+     *
      * @param wallpaperPaper 壁纸列表
      * @return 结果
      */
@@ -37,7 +38,7 @@ public interface IWallpaperPaperService
 
     /**
      * 修改壁纸列表
-     * 
+     *
      * @param wallpaperPaper 壁纸列表
      * @return 结果
      */
@@ -45,7 +46,7 @@ public interface IWallpaperPaperService
 
     /**
      * 批量删除壁纸列表
-     * 
+     *
      * @param paperIds 需要删除的壁纸列表主键集合
      * @return 结果
      */
@@ -53,9 +54,17 @@ public interface IWallpaperPaperService
 
     /**
      * 删除壁纸列表信息
-     * 
+     *
      * @param paperId 壁纸列表主键
      * @return 结果
      */
     public int deleteWallpaperPaperByPaperId(Long paperId);
+
+    /**
+     * 更新墙纸状态
+     *
+     * @param wallpaperPaper 壁纸纸
+     * @return int
+     */
+    int updateWallpaperStatus(WallpaperPaper wallpaperPaper);
 }

@@ -89,7 +89,15 @@ public class WallpaperPaperController extends BaseController {
     public AjaxResult edit(@RequestBody WallpaperPaper wallpaperPaper) {
         return toAjax(wallpaperPaperService.updateWallpaperPaper(wallpaperPaper));
     }
-
+    /**
+     * 状态修改
+     */
+    @PreAuthorize("@ss.hasPermi('wallpaper:paper:edit')")
+    @PutMapping("/changeStatus")
+    public AjaxResult changeStatus(@RequestBody WallpaperPaper wallpaperPaper)
+    {
+        return toAjax(wallpaperPaperService.updateWallpaperStatus(wallpaperPaper));
+    }
     /**
      * 删除壁纸列表
      */

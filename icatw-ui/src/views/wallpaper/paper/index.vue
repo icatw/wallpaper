@@ -25,6 +25,18 @@
           placeholder="请选择修改时间">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="是否启用">
+        <template>
+          <el-select v-model="queryParams.isDeleted" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </template>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -100,8 +112,9 @@
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.isDeleted"
-              active-value="1"
-              inactive-value="0"
+              :active-value="0"
+              :inactive-value="1"
+              @change="handleStatusChange(scope.row)"
             ></el-switch>
         </template>
       </el-table-column>
@@ -166,13 +179,20 @@
 </template>
 
 <script>
-import { listPaper, getPaper, delPaper, addPaper, updatePaper } from "@/api/wallpaper/paper";
+import {listPaper, getPaper, delPaper, addPaper, updatePaper, changePaperStatus} from "@/api/wallpaper/paper";
 import { listAllType } from "@/api/wallpaper/type";
 
 export default {
   name: "Paper",
   data() {
     return {
+      options: [{
+        value: '0',
+        label: '启用'
+      }, {
+        value: '1',
+        label: '禁用'
+      }],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -236,12 +256,24 @@ export default {
         this.loading = false;
       });
     },
+    //获取分类列表
     getTypeList() {
       listAllType().then(response => {
         console.log(response.data)
         console.log(response)
         this.typeList=response.data
       })
+    },
+    // 壁纸状态修改
+    handleStatusChange(row) {
+      let text = row.isDeleted === "0" ? "启用" : "停用";
+      this.$modal.confirm('确认要"' + text + '""' + row.paperName + '"壁纸吗？').then(function () {
+        return changePaperStatus(row.paperId, row.isDeleted);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function () {
+        row.paperName = row.paperName === "0" ? "1" : "0";
+      });
     },
     // 取消按钮
     cancel() {

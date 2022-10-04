@@ -93,11 +93,7 @@ export default {
           // 然后将数组转为对象数组
           this.fileList = list.map(item => {
             if (typeof item === "string") {
-              // if (item.indexOf(this.baseUrl) === -1) {
-              //     item = { name: this.baseUrl + item, url: this.baseUrl + item };
-              // } else {
               item = { name: item, url: item };
-              // }
             }
             return item;
           });

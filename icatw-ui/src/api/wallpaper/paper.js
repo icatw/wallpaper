@@ -9,6 +9,19 @@ export function listPaper(query) {
   })
 }
 
+// 壁纸状态修改
+export function changePaperStatus(paperId, isDeleted) {
+  const data = {
+    paperId,
+    isDeleted
+  }
+  return request({
+    url: '/wallpaper/paper/changeStatus',
+    method: 'put',
+    data: data
+  })
+}
+
 // 查询壁纸列表详细
 export function getPaper(paperId) {
   return request({
