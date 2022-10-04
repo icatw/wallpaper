@@ -25,6 +25,18 @@
           placeholder="请选择修改时间">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="状态" prop="isDeleted">
+        <template>
+          <el-select clearable v-model="queryParams.isDeleted" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </template>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -151,6 +163,13 @@ export default {
   name: "Type",
   data() {
     return {
+      options: [{
+        value: '0',
+        label: '启用'
+      }, {
+        value: '1',
+        label: '禁用'
+      }],
       // 遮罩层
       loading: true,
       // 选中数组

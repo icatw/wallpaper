@@ -93,6 +93,7 @@ public class WallpaperPaperController extends BaseController {
      * 状态修改
      */
     @PreAuthorize("@ss.hasPermi('wallpaper:paper:edit')")
+    @Log(title = "壁纸列表" , businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody WallpaperPaper wallpaperPaper)
     {

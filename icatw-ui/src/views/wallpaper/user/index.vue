@@ -29,27 +29,39 @@
       </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker clearable
-          v-model="queryParams.createTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择创建时间">
+                        v-model="queryParams.createTime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="请选择创建时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="修改时间" prop="updateTime">
         <el-date-picker clearable
-          v-model="queryParams.updateTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择修改时间">
+                        v-model="queryParams.updateTime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="请选择修改时间">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="最后登陆时间" prop="lastLoginTime">
+      <el-form-item label="最后登陆时间" prop="lastLoginTime" label-width="200">
         <el-date-picker clearable
-          v-model="queryParams.lastLoginTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择最后登陆时间">
+                        v-model="queryParams.lastLoginTime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="请选择最后登陆时间">
         </el-date-picker>
+      </el-form-item>
+      <el-form-item label="状态" prop="status">
+        <template>
+          <el-select clearable v-model="queryParams.status" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </template>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -66,7 +78,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['wallpaper:user:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -77,7 +90,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['wallpaper:user:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -88,7 +102,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['wallpaper:user:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -98,22 +113,23 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['wallpaper:user:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键自增id" align="center" prop="userId" />
-      <el-table-column label="用户名" align="center" prop="userName" />
-      <el-table-column label="昵称" align="center" prop="nickName" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="主键自增id" align="center" prop="userId"/>
+      <el-table-column label="用户名" align="center" prop="userName"/>
+      <el-table-column label="昵称" align="center" prop="nickName"/>
       <el-table-column label="性别" align="center" prop="sex">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="status" >
+      <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -146,14 +162,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['wallpaper:user:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['wallpaper:user:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -170,13 +188,13 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户名" prop="userName">
-          <el-input v-model="form.userName" placeholder="请输入用户名" />
+          <el-input v-model="form.userName" placeholder="请输入用户名"/>
         </el-form-item>
         <el-form-item label="昵称" prop="nickName">
-          <el-input v-model="form.nickName" placeholder="请输入昵称" />
+          <el-input v-model="form.nickName" placeholder="请输入昵称"/>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码" show-password />
+          <el-input v-model="form.password" placeholder="请输入密码" show-password/>
         </el-form-item>
         <el-form-item label="性别" prop="sex">
           <el-select v-model="form.sex" placeholder="请选择性别">
@@ -184,7 +202,7 @@
               v-for="dict in dict.type.sys_user_sex"
               :key="dict.value"
               :label="dict.label"
-:value="dict.value"
+              :value="dict.value"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -198,13 +216,20 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser,changeUserStatus } from "@/api/wallpaper/user";
+import {listUser, getUser, delUser, addUser, updateUser, changeUserStatus} from "@/api/wallpaper/user";
 
 export default {
   name: "User",
   dicts: ['sys_user_sex'],
   data() {
     return {
+      options: [{
+        value: '0',
+        label: '启用'
+      }, {
+        value: '1',
+        label: '禁用'
+      }],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -240,16 +265,16 @@ export default {
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名不能为空", trigger: "blur" }
+          {required: true, message: "用户名不能为空", trigger: "blur"}
         ],
         nickName: [
-          { required: true, message: "昵称不能为空", trigger: "blur" }
+          {required: true, message: "昵称不能为空", trigger: "blur"}
         ],
         password: [
-          { required: true, message: "密码不能为空", trigger: "blur" }
+          {required: true, message: "密码不能为空", trigger: "blur"}
         ],
         sex: [
-          { required: true, message: "性别不能为空", trigger: "change" }
+          {required: true, message: "性别不能为空", trigger: "change"}
         ],
       }
     };
@@ -311,7 +336,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.userId)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -353,12 +378,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids;
-      this.$modal.confirm('是否确认删除用户管理编号为"' + userIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除用户管理编号为"' + userIds + '"的数据项？').then(function () {
         return delUser(userIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

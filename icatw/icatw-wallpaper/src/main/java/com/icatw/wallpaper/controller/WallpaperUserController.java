@@ -91,6 +91,7 @@ public class WallpaperUserController extends BaseController
      * 状态修改
      */
     @PreAuthorize("@ss.hasPermi('wallpaper:user:edit')")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody WallpaperUser wallpaperUser)
     {

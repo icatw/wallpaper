@@ -36,7 +36,7 @@ public class WallpaperPaper extends BaseEntity {
     /**
      * 逻辑删除（1删除，0未删除）
      */
-    @Excel(name = "逻辑删除" , readConverterExp = "1=删除，0=未删除")
+    @Excel(name = "逻辑删除" , readConverterExp = "1=禁用,0=启用")
     private Long isDeleted;
 
     /**
@@ -44,7 +44,6 @@ public class WallpaperPaper extends BaseEntity {
      */
     @Excel(name = "分类id")
     private Long typeId;
-
     private WallpaperType type;
     /**
      * 图片分辨率（width*height）
