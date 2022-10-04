@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="壁纸名" prop="paperName">
+      <el-form-item label="分类名" prop="typeName">
         <el-input
-          v-model="queryParams.paperName"
-          placeholder="请输入壁纸名"
+          v-model="queryParams.typeName"
+          placeholder="请输入分类名"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -39,7 +39,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['wallpaper:paper:add']"
+          v-hasPermi="['wallpaper:type:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -50,7 +50,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['wallpaper:paper:edit']"
+          v-hasPermi="['wallpaper:type:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -61,7 +61,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['wallpaper:paper:remove']"
+          v-hasPermi="['wallpaper:type:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -71,21 +71,16 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['wallpaper:paper:export']"
+          v-hasPermi="['wallpaper:type:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="paperList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="typeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="壁纸id" align="center" prop="paperId" />
-      <el-table-column label="壁纸名" align="center" prop="paperName" />
-      <el-table-column label="壁纸" align="center" prop="paperUrl" width="100">
-        <template slot-scope="scope">
-          <image-preview :src="scope.row.paperUrl" :width="50" :height="50"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="主键id" align="center" prop="typeId" />
+      <el-table-column label="分类名" align="center" prop="typeName" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -96,17 +91,7 @@
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否启用" align="center" prop="isDeleted" >
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.isDeleted"
-              active-value="1"
-              inactive-value="0"
-            ></el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column label="分类" align="center" prop="type.typeName" ></el-table-column>
-      <el-table-column label="图片分辨率" align="center" prop="paperSize" />
+      <el-table-column label="逻辑删除" align="center" prop="isDeleted" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -114,19 +99,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['wallpaper:paper:edit']"
+            v-hasPermi="['wallpaper:type:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['wallpaper:paper:remove']"
+            v-hasPermi="['wallpaper:type:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -135,26 +120,11 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改壁纸列表对话框 -->
+    <!-- 添加或修改分类管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="壁纸名" prop="paperName">
-          <el-input v-model="form.paperName" placeholder="请输入壁纸名" />
-        </el-form-item>
-        <el-form-item label="请选择分类">
-          <template>
-            <el-select v-model="form.typeId" placeholder="请选择分类">
-              <el-option
-                v-for="item in typeList"
-                :key="item.typeId"
-                :label="item.typeName"
-                :value="item.typeId">
-              </el-option>
-            </el-select>
-          </template>
-        </el-form-item>
-        <el-form-item label="壁纸">
-          <image-upload v-model="form.paperUrl"/>
+        <el-form-item label="分类名" prop="typeName">
+          <el-input v-model="form.typeName" placeholder="请输入分类名" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -166,11 +136,10 @@
 </template>
 
 <script>
-import { listPaper, getPaper, delPaper, addPaper, updatePaper } from "@/api/wallpaper/paper";
-import { listAllType } from "@/api/wallpaper/type";
+import { listType, getType, delType, addType, updateType } from "@/api/wallpaper/type";
 
 export default {
-  name: "Paper",
+  name: "Type",
   data() {
     return {
       // 遮罩层
@@ -185,8 +154,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 壁纸列表表格数据
-      paperList: [],
+      // 分类管理表格数据
+      typeList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -195,53 +164,33 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        paperName: null,
-        paperUrl: null,
+        typeName: null,
         createTime: null,
         updateTime: null,
-        isDeleted: null,
-        typeId: null,
+        isDeleted: null
       },
       // 表单参数
       form: {},
-      typeList:[{
-        typeId:'',
-        typeName:''
-      }],
       // 表单校验
       rules: {
-        paperName: [
-          { required: true, message: "壁纸名不能为空", trigger: "blur" }
-        ],
-        paperUrl: [
-          { required: true, message: "壁纸url不能为空", trigger: "blur" }
-        ],
-        typeId: [
-          { required: true, message: "分类id不能为空", trigger: "change" }
+        typeName: [
+          { required: true, message: "分类名不能为空", trigger: "blur" }
         ],
       }
     };
   },
   created() {
     this.getList();
-    this.getTypeList()
   },
   methods: {
-    /** 查询壁纸列表列表 */
+    /** 查询分类管理列表 */
     getList() {
       this.loading = true;
-      listPaper(this.queryParams).then(response => {
-        this.paperList = response.rows;
+      listType(this.queryParams).then(response => {
+        this.typeList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
-    },
-    getTypeList() {
-      listAllType().then(response => {
-        console.log(response.data)
-        console.log(response)
-        this.typeList=response.data
-      })
     },
     // 取消按钮
     cancel() {
@@ -251,14 +200,11 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        paperId: null,
-        paperName: null,
-        paperUrl: null,
+        typeId: null,
+        typeName: null,
         createTime: null,
         updateTime: null,
-        isDeleted: null,
-        typeId: null,
-        paperSize: null
+        isDeleted: 0
       };
       this.resetForm("form");
     },
@@ -274,7 +220,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.paperId)
+      this.ids = selection.map(item => item.typeId)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -282,30 +228,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加壁纸列表";
+      this.title = "添加分类管理";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const paperId = row.paperId || this.ids
-      getPaper(paperId).then(response => {
+      const typeId = row.typeId || this.ids
+      getType(typeId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改壁纸列表";
+        this.title = "修改分类管理";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.paperId != null) {
-            updatePaper(this.form).then(response => {
+          if (this.form.typeId != null) {
+            updateType(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addPaper(this.form).then(response => {
+            addType(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -316,9 +262,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const paperIds = row.paperId || this.ids;
-      this.$modal.confirm('是否确认删除壁纸列表编号为"' + paperIds + '"的数据项？').then(function() {
-        return delPaper(paperIds);
+      const typeIds = row.typeId || this.ids;
+      this.$modal.confirm('是否确认删除分类管理编号为"' + typeIds + '"的数据项？').then(function() {
+        return delType(typeIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -326,9 +272,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('wallpaper/paper/export', {
+      this.download('wallpaper/type/export', {
         ...this.queryParams
-      }, `paper_${new Date().getTime()}.xlsx`)
+      }, `type_${new Date().getTime()}.xlsx`)
     }
   }
 };

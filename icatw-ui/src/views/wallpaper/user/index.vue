@@ -1,13 +1,31 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="壁纸名" prop="paperName">
+      <el-form-item label="用户名" prop="userName">
         <el-input
-          v-model="queryParams.paperName"
-          placeholder="请输入壁纸名"
+          v-model="queryParams.userName"
+          placeholder="请输入用户名"
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="昵称" prop="nickName">
+        <el-input
+          v-model="queryParams.nickName"
+          placeholder="请输入昵称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="性别" prop="sex">
+        <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable>
+          <el-option
+            v-for="dict in dict.type.sys_user_sex"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker clearable
@@ -25,6 +43,14 @@
           placeholder="请选择修改时间">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="最后登陆时间" prop="lastLoginTime">
+        <el-date-picker clearable
+          v-model="queryParams.lastLoginTime"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="请选择最后登陆时间">
+        </el-date-picker>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -39,7 +65,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['wallpaper:paper:add']"
+          v-hasPermi="['wallpaper:user:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -50,7 +76,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['wallpaper:paper:edit']"
+          v-hasPermi="['wallpaper:user:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -61,7 +87,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['wallpaper:paper:remove']"
+          v-hasPermi="['wallpaper:user:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -71,21 +97,23 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['wallpaper:paper:export']"
+          v-hasPermi="['wallpaper:user:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="paperList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="壁纸id" align="center" prop="paperId" />
-      <el-table-column label="壁纸名" align="center" prop="paperName" />
-      <el-table-column label="壁纸" align="center" prop="paperUrl" width="100">
+      <el-table-column label="主键自增id" align="center" prop="userId" />
+      <el-table-column label="用户名" align="center" prop="userName" />
+      <el-table-column label="昵称" align="center" prop="nickName" />
+      <el-table-column label="性别" align="center" prop="sex">
         <template slot-scope="scope">
-          <image-preview :src="scope.row.paperUrl" :width="50" :height="50"/>
+          <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
+      <el-table-column label="【是否启用账号】" align="center" prop="status" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -96,17 +124,11 @@
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否启用" align="center" prop="isDeleted" >
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.isDeleted"
-              active-value="1"
-              inactive-value="0"
-            ></el-switch>
+      <el-table-column label="最后登陆时间" align="center" prop="lastLoginTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.lastLoginTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="分类" align="center" prop="type.typeName" ></el-table-column>
-      <el-table-column label="图片分辨率" align="center" prop="paperSize" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -114,19 +136,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['wallpaper:paper:edit']"
+            v-hasPermi="['wallpaper:user:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['wallpaper:paper:remove']"
+            v-hasPermi="['wallpaper:user:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -135,26 +157,27 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改壁纸列表对话框 -->
+    <!-- 添加或修改用户管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="壁纸名" prop="paperName">
-          <el-input v-model="form.paperName" placeholder="请输入壁纸名" />
+        <el-form-item label="用户名" prop="userName">
+          <el-input v-model="form.userName" placeholder="请输入用户名" />
         </el-form-item>
-        <el-form-item label="请选择分类">
-          <template>
-            <el-select v-model="form.typeId" placeholder="请选择分类">
-              <el-option
-                v-for="item in typeList"
-                :key="item.typeId"
-                :label="item.typeName"
-                :value="item.typeId">
-              </el-option>
-            </el-select>
-          </template>
+        <el-form-item label="昵称" prop="nickName">
+          <el-input v-model="form.nickName" placeholder="请输入昵称" />
         </el-form-item>
-        <el-form-item label="壁纸">
-          <image-upload v-model="form.paperUrl"/>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="form.password" placeholder="请输入密码" />
+        </el-form-item>
+        <el-form-item label="性别" prop="sex">
+          <el-select v-model="form.sex" placeholder="请选择性别">
+            <el-option
+              v-for="dict in dict.type.sys_user_sex"
+              :key="dict.value"
+              :label="dict.label"
+:value="dict.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -166,11 +189,11 @@
 </template>
 
 <script>
-import { listPaper, getPaper, delPaper, addPaper, updatePaper } from "@/api/wallpaper/paper";
-import { listAllType } from "@/api/wallpaper/type";
+import { listUser, getUser, delUser, addUser, updateUser } from "@/api/wallpaper/user";
 
 export default {
-  name: "Paper",
+  name: "User",
+  dicts: ['sys_user_sex'],
   data() {
     return {
       // 遮罩层
@@ -185,8 +208,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 壁纸列表表格数据
-      paperList: [],
+      // 用户管理表格数据
+      userList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -195,53 +218,45 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        paperName: null,
-        paperUrl: null,
+        userName: null,
+        nickName: null,
+        sex: null,
+        status: null,
         createTime: null,
         updateTime: null,
-        isDeleted: null,
-        typeId: null,
+        lastLoginTime: null
       },
       // 表单参数
       form: {},
-      typeList:[{
-        typeId:'',
-        typeName:''
-      }],
       // 表单校验
       rules: {
-        paperName: [
-          { required: true, message: "壁纸名不能为空", trigger: "blur" }
+        userName: [
+          { required: true, message: "用户名不能为空", trigger: "blur" }
         ],
-        paperUrl: [
-          { required: true, message: "壁纸url不能为空", trigger: "blur" }
+        nickName: [
+          { required: true, message: "昵称不能为空", trigger: "blur" }
         ],
-        typeId: [
-          { required: true, message: "分类id不能为空", trigger: "change" }
+        password: [
+          { required: true, message: "密码不能为空", trigger: "blur" }
+        ],
+        sex: [
+          { required: true, message: "性别不能为空", trigger: "change" }
         ],
       }
     };
   },
   created() {
     this.getList();
-    this.getTypeList()
   },
   methods: {
-    /** 查询壁纸列表列表 */
+    /** 查询用户管理列表 */
     getList() {
       this.loading = true;
-      listPaper(this.queryParams).then(response => {
-        this.paperList = response.rows;
+      listUser(this.queryParams).then(response => {
+        this.userList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
-    },
-    getTypeList() {
-      listAllType().then(response => {
-        console.log(response.data)
-        console.log(response)
-        this.typeList=response.data
-      })
     },
     // 取消按钮
     cancel() {
@@ -251,14 +266,15 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        paperId: null,
-        paperName: null,
-        paperUrl: null,
+        userId: null,
+        userName: null,
+        nickName: null,
+        password: null,
+        sex: null,
+        status: 0,
         createTime: null,
         updateTime: null,
-        isDeleted: null,
-        typeId: null,
-        paperSize: null
+        lastLoginTime: null
       };
       this.resetForm("form");
     },
@@ -274,7 +290,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.paperId)
+      this.ids = selection.map(item => item.userId)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -282,30 +298,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加壁纸列表";
+      this.title = "添加用户管理";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const paperId = row.paperId || this.ids
-      getPaper(paperId).then(response => {
+      const userId = row.userId || this.ids
+      getUser(userId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改壁纸列表";
+        this.title = "修改用户管理";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.paperId != null) {
-            updatePaper(this.form).then(response => {
+          if (this.form.userId != null) {
+            updateUser(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addPaper(this.form).then(response => {
+            addUser(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -316,9 +332,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const paperIds = row.paperId || this.ids;
-      this.$modal.confirm('是否确认删除壁纸列表编号为"' + paperIds + '"的数据项？').then(function() {
-        return delPaper(paperIds);
+      const userIds = row.userId || this.ids;
+      this.$modal.confirm('是否确认删除用户管理编号为"' + userIds + '"的数据项？').then(function() {
+        return delUser(userIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -326,9 +342,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('wallpaper/paper/export', {
+      this.download('wallpaper/user/export', {
         ...this.queryParams
-      }, `paper_${new Date().getTime()}.xlsx`)
+      }, `user_${new Date().getTime()}.xlsx`)
     }
   }
 };

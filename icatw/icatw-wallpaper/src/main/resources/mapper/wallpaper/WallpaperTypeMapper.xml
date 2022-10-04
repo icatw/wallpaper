@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icatw.wallpaper.mapper.WallpaperTypeMapper">
+    
+    <resultMap type="WallpaperType" id="WallpaperTypeResult">
+        <result property="typeId"    column="type_id"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+
+    <sql id="selectWallpaperTypeVo">
+        select type_id, type_name, create_time, update_time, is_deleted from wallpaper_type
+    </sql>
+
+    <select id="selectWallpaperTypeList" parameterType="WallpaperType" resultMap="WallpaperTypeResult">
+        <include refid="selectWallpaperTypeVo"/>
+        <where>  
+            <if test="typeName != null  and typeName != ''"> and type_name like concat('%', #{typeName}, '%')</if>
+            <if test="createTime != null "> and create_time &gt;= #{createTime}</if>
+            <if test="updateTime != null "> and update_time &lt;= #{updateTime}</if>
+            <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectWallpaperTypeByTypeId" parameterType="Long" resultMap="WallpaperTypeResult">
+        <include refid="selectWallpaperTypeVo"/>
+        where type_id = #{typeId}
+    </select>
+        
+    <insert id="insertWallpaperType" parameterType="WallpaperType" useGeneratedKeys="true" keyProperty="typeId">
+        insert into wallpaper_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="typeName != null and typeName != ''">type_name,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="typeName != null and typeName != ''">#{typeName},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWallpaperType" parameterType="WallpaperType">
+        update wallpaper_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="typeName != null and typeName != ''">type_name = #{typeName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+        </trim>
+        where type_id = #{typeId}
+    </update>
+
+    <delete id="deleteWallpaperTypeByTypeId" parameterType="Long">
+        delete from wallpaper_type where type_id = #{typeId}
+    </delete>
+
+    <delete id="deleteWallpaperTypeByTypeIds" parameterType="String">
+        delete from wallpaper_type where type_id in 
+        <foreach item="typeId" collection="array" open="(" separator="," close=")">
+            #{typeId}
+        </foreach>
+    </delete>
+</mapper>
