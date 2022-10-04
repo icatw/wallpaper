@@ -7,6 +7,7 @@ import com.icatw.common.core.page.TableDataInfo;
 import com.icatw.common.enums.BusinessType;
 import com.icatw.common.utils.poi.ExcelUtil;
 import com.icatw.wallpaper.domain.WallpaperType;
+import com.icatw.wallpaper.domain.WallpaperUser;
 import com.icatw.wallpaper.service.IWallpaperTypeService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,16 @@ public class WallpaperTypeController extends BaseController
     {
         return toAjax(wallpaperTypeService.updateWallpaperType(wallpaperType));
     }
-
+    /**
+     * 状态修改
+     */
+    @PreAuthorize("@ss.hasPermi('wallpaper:type:edit')")
+    @Log(title = "分类管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/changeStatus")
+    public AjaxResult changeStatus(@RequestBody WallpaperType wallpaperType)
+    {
+        return toAjax(wallpaperTypeService.updateWallpaperStatus(wallpaperType));
+    }
     /**
      * 删除分类管理
      */

@@ -34,7 +34,18 @@ export function updateUser(data) {
     data: data
   })
 }
-
+// 壁纸状态修改
+export function changeUserStatus(userId, status) {
+  const data = {
+    userId,
+    status
+  }
+  return request({
+    url: '/wallpaper/user/changeStatus',
+    method: 'put',
+    data: data
+  })
+}
 // 删除用户管理
 export function delUser(userId) {
   return request({

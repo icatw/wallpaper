@@ -25,9 +25,9 @@
           placeholder="请选择修改时间">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="是否启用">
+      <el-form-item label="状态" prop="isDeleted">
         <template>
-          <el-select v-model="queryParams.isDeleted" placeholder="请选择">
+          <el-select clearable v-model="queryParams.isDeleted" placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -108,7 +108,7 @@
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否启用" align="center" prop="isDeleted" >
+      <el-table-column label="状态" align="center" key="isDeleted" prop="isDeleted" >
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.isDeleted"
@@ -154,7 +154,7 @@
         <el-form-item label="壁纸名" prop="paperName">
           <el-input v-model="form.paperName" placeholder="请输入壁纸名" />
         </el-form-item>
-        <el-form-item label="请选择分类">
+        <el-form-item label="请选择分类" prop="typeId">
           <template>
             <el-select v-model="form.typeId" placeholder="请选择分类">
               <el-option
@@ -166,8 +166,8 @@
             </el-select>
           </template>
         </el-form-item>
-        <el-form-item label="壁纸">
-          <image-upload v-model="form.paperUrl"/>
+        <el-form-item label="壁纸" prop="paperUrl">
+          <image-upload v-model="form.paperUrl" @imgSize="imgWh"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -224,6 +224,7 @@ export default {
       },
       // 表单参数
       form: {},
+      imgSizes:'',
       typeList:[{
         typeId:'',
         typeName:''
@@ -234,10 +235,10 @@ export default {
           { required: true, message: "壁纸名不能为空", trigger: "blur" }
         ],
         paperUrl: [
-          { required: true, message: "壁纸url不能为空", trigger: "blur" }
+          { required: true, message: "壁纸不能为空", trigger: "blur" }
         ],
         typeId: [
-          { required: true, message: "分类id不能为空", trigger: "change" }
+          { required: true, message: "请选择分类", trigger: 'change' }
         ],
       }
     };
@@ -247,6 +248,11 @@ export default {
     this.getTypeList()
   },
   methods: {
+    //
+    imgWh(sizes){
+      this.imgSizes = `${sizes.width}x${sizes.height}`
+
+    },
     /** 查询壁纸列表列表 */
     getList() {
       this.loading = true;
@@ -266,13 +272,15 @@ export default {
     },
     // 壁纸状态修改
     handleStatusChange(row) {
-      let text = row.isDeleted === "0" ? "启用" : "停用";
+      console.log(row )
+      let text = row.isDeleted == "0" ? "启用" : "停用";
       this.$modal.confirm('确认要"' + text + '""' + row.paperName + '"壁纸吗？').then(function () {
         return changePaperStatus(row.paperId, row.isDeleted);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
+        this.getList();
       }).catch(function () {
-        row.paperName = row.paperName === "0" ? "1" : "0";
+        row.isDeleted = row.isDeleted == "0" ? "1" : "0";
       });
     },
     // 取消按钮
@@ -328,8 +336,10 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.paperSize=this.imgSizes
           if (this.form.paperId != null) {
             updatePaper(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");

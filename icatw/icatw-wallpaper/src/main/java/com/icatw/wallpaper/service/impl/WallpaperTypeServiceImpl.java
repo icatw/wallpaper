@@ -1,7 +1,9 @@
 package com.icatw.wallpaper.service.impl;
 
 import com.icatw.common.utils.DateUtils;
+import com.icatw.wallpaper.domain.WallpaperPaper;
 import com.icatw.wallpaper.domain.WallpaperType;
+import com.icatw.wallpaper.mapper.WallpaperPaperMapper;
 import com.icatw.wallpaper.mapper.WallpaperTypeMapper;
 import com.icatw.wallpaper.service.IWallpaperTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,11 @@ import java.util.List;
  * @date 2022-10-04
  */
 @Service
-public class WallpaperTypeServiceImpl implements IWallpaperTypeService
-{
+public class WallpaperTypeServiceImpl implements IWallpaperTypeService {
     @Autowired
     private WallpaperTypeMapper wallpaperTypeMapper;
+    @Autowired
+    private WallpaperPaperMapper wallpaperPaperMapper;
 
     /**
      * 查询分类管理
@@ -28,8 +31,7 @@ public class WallpaperTypeServiceImpl implements IWallpaperTypeService
      * @return 分类管理
      */
     @Override
-    public WallpaperType selectWallpaperTypeByTypeId(Long typeId)
-    {
+    public WallpaperType selectWallpaperTypeByTypeId(Long typeId) {
         return wallpaperTypeMapper.selectWallpaperTypeByTypeId(typeId);
     }
 
@@ -40,8 +42,7 @@ public class WallpaperTypeServiceImpl implements IWallpaperTypeService
      * @return 分类管理
      */
     @Override
-    public List<WallpaperType> selectWallpaperTypeList(WallpaperType wallpaperType)
-    {
+    public List<WallpaperType> selectWallpaperTypeList(WallpaperType wallpaperType) {
         return wallpaperTypeMapper.selectWallpaperTypeList(wallpaperType);
     }
 
@@ -52,8 +53,7 @@ public class WallpaperTypeServiceImpl implements IWallpaperTypeService
      * @return 结果
      */
     @Override
-    public int insertWallpaperType(WallpaperType wallpaperType)
-    {
+    public int insertWallpaperType(WallpaperType wallpaperType) {
         wallpaperType.setCreateTime(DateUtils.getNowDate());
         return wallpaperTypeMapper.insertWallpaperType(wallpaperType);
     }
@@ -65,8 +65,7 @@ public class WallpaperTypeServiceImpl implements IWallpaperTypeService
      * @return 结果
      */
     @Override
-    public int updateWallpaperType(WallpaperType wallpaperType)
-    {
+    public int updateWallpaperType(WallpaperType wallpaperType) {
         wallpaperType.setUpdateTime(DateUtils.getNowDate());
         return wallpaperTypeMapper.updateWallpaperType(wallpaperType);
     }
@@ -78,8 +77,7 @@ public class WallpaperTypeServiceImpl implements IWallpaperTypeService
      * @return 结果
      */
     @Override
-    public int deleteWallpaperTypeByTypeIds(Long[] typeIds)
-    {
+    public int deleteWallpaperTypeByTypeIds(Long[] typeIds) {
         return wallpaperTypeMapper.deleteWallpaperTypeByTypeIds(typeIds);
     }
 
@@ -90,8 +88,29 @@ public class WallpaperTypeServiceImpl implements IWallpaperTypeService
      * @return 结果
      */
     @Override
-    public int deleteWallpaperTypeByTypeId(Long typeId)
-    {
+    public int deleteWallpaperTypeByTypeId(Long typeId) {
         return wallpaperTypeMapper.deleteWallpaperTypeByTypeId(typeId);
+    }
+
+    /**
+     * 更新分类状态，如果分类状态为1【禁用】，则禁用此分类所有壁纸
+     *
+     * @param wallpaperType 壁纸类型
+     * @return int
+     */
+    @Override
+    public int updateWallpaperStatus(WallpaperType wallpaperType) {
+        wallpaperType.setUpdateTime(DateUtils.getNowDate());
+        //更新分类状态，如果分类状态为1【禁用】，则禁用此分类所有壁纸
+        if (wallpaperType.getIsDeleted()==1){
+            WallpaperPaper paper = new WallpaperPaper();
+            paper.setTypeId(wallpaperType.getTypeId());
+            List<WallpaperPaper> wallpaperPapers = wallpaperPaperMapper.selectWallpaperPaperList(paper);
+            wallpaperPapers.forEach(img->{
+                img.setIsDeleted(1L);
+                wallpaperPaperMapper.updateWallpaperPaper(img);
+            });
+        }
+        return wallpaperTypeMapper.updateWallpaperType(wallpaperType);
     }
 }

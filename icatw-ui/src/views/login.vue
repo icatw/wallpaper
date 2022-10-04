@@ -27,16 +27,9 @@
             placeholder="密码"
             auto-complete="off"
             type="password"
-            @keyup.enter.native="handleLogin"
+            @keyup.enter.native="handlelLogin"
           />
         </el-form-item>
-        <Verify
-          @success="capctchaCheckSuccess"
-          :mode="'pop'"
-          :captchaType="'blockPuzzle'"
-          :imgSize="{ width: '330px', height: '155px' }"
-          ref="verify"
-        ></Verify>
         <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
       </el-form>
       <!-- 登录按钮 -->
@@ -98,32 +91,6 @@ export default {
         password: password === undefined ? this.loginForm.password : decrypt(password),
         rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
       };
-    },
-    capctchaCheckSuccess(params) {
-      this.loginForm.code = params.captchaVerification;
-      this.loading = true;
-      if (this.loginForm.rememberMe) {
-        Cookies.set("username", this.loginForm.username, {expires: 30});
-        Cookies.set("password", encrypt(this.loginForm.password), {expires: 30,});
-        Cookies.set("rememberMe", this.loginForm.rememberMe, {expires: 30});
-      } else {
-        Cookies.remove("username");
-        Cookies.remove("password");
-        Cookies.remove("rememberMe");
-      }
-      this.$store.dispatch("Login", this.loginForm).then(() => {
-        this.$router.push({path: this.redirect || "/"}).catch(() => {
-        });
-      }).catch(() => {
-        this.loading = false;
-      });
-    },
-    handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.$refs.verify.show();
-        }
-      });
     },
     handlelLogin() {
       this.$refs.loginForm.validate((valid) => {

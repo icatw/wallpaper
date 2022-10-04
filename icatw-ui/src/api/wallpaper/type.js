@@ -8,6 +8,7 @@ export function listType(query) {
     params: query
   })
 }
+
 // 查询分类管理列表
 export function listAllType() {
   return request({
@@ -15,6 +16,7 @@ export function listAllType() {
     method: 'get'
   })
 }
+
 // 查询分类管理详细
 export function getType(typeId) {
   return request({
@@ -36,6 +38,19 @@ export function addType(data) {
 export function updateType(data) {
   return request({
     url: '/wallpaper/type',
+    method: 'put',
+    data: data
+  })
+}
+
+// 壁纸状态修改
+export function changeTypeStatus(typeId, isDeleted) {
+  const data = {
+    typeId,
+    isDeleted
+  }
+  return request({
+    url: '/wallpaper/type/changeStatus',
     method: 'put',
     data: data
   })

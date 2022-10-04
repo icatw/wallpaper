@@ -59,4 +59,12 @@ public interface IWallpaperTypeService
      * @return 结果
      */
     public int deleteWallpaperTypeByTypeId(Long typeId);
+
+    /**
+     * 更新分类状态
+     *
+     * @param wallpaperType 壁纸类型
+     * @return int
+     */
+    int updateWallpaperStatus(WallpaperType wallpaperType);
 }

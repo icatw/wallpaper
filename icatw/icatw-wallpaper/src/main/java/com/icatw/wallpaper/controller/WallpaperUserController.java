@@ -88,6 +88,15 @@ public class WallpaperUserController extends BaseController
     }
 
     /**
+     * 状态修改
+     */
+    @PreAuthorize("@ss.hasPermi('wallpaper:user:edit')")
+    @PutMapping("/changeStatus")
+    public AjaxResult changeStatus(@RequestBody WallpaperUser wallpaperUser)
+    {
+        return toAjax(wallpaperUserService.updateWallpaperStatus(wallpaperUser));
+    }
+    /**
      * 删除用户管理
      */
     @PreAuthorize("@ss.hasPermi('wallpaper:user:remove')")

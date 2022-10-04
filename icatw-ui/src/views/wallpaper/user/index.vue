@@ -113,7 +113,16 @@
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-      <el-table-column label="【是否启用账号】" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status" >
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            :active-value="0"
+            :inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -148,7 +157,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -167,7 +176,7 @@
           <el-input v-model="form.nickName" placeholder="请输入昵称" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码" />
+          <el-input v-model="form.password" placeholder="请输入密码" show-password />
         </el-form-item>
         <el-form-item label="性别" prop="sex">
           <el-select v-model="form.sex" placeholder="请选择性别">
@@ -189,7 +198,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser } from "@/api/wallpaper/user";
+import { listUser, getUser, delUser, addUser, updateUser,changeUserStatus } from "@/api/wallpaper/user";
 
 export default {
   name: "User",
@@ -256,6 +265,17 @@ export default {
         this.userList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    // 用户状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function () {
+        return changeUserStatus(row.userId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function () {
+        row.status = row.status === "0" ? "1" : "0";
       });
     },
     // 取消按钮

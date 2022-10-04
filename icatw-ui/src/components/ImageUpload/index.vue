@@ -123,7 +123,18 @@ export default {
     },
     // 上传成功回调
     handleUploadSuccess(res) {
+      let that = this
       console.log(res)
+      console.log(res.url)
+      let imgcont = new Image()
+      imgcont.src=res.url
+      imgcont.onload=function(){
+        let imgWh = {
+          width:imgcont.width,
+          height:imgcont.height
+        }
+        that.$emit('imgSize',imgWh)
+      }
       this.uploadList.push({ name: res.fileName, url: res.url });
       if (this.uploadList.length === this.number) {
         this.fileList = this.fileList.concat(this.uploadList);
@@ -136,6 +147,7 @@ export default {
     // 上传前loading加载
     handleBeforeUpload(file) {
       let isImg = false;
+
       if (this.fileType.length) {
         let fileExtension = "";
         if (file.name.lastIndexOf(".") > -1) {

@@ -90,6 +90,7 @@ public class WallpaperPaperServiceImpl implements IWallpaperPaperService {
 
     @Override
     public int updateWallpaperStatus(WallpaperPaper wallpaperPaper) {
+        wallpaperPaper.setUpdateTime(DateUtils.getNowDate());
         return wallpaperPaperMapper.updateWallpaperPaper(wallpaperPaper);
     }
 }

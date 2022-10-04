@@ -91,7 +91,16 @@
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="逻辑删除" align="center" prop="isDeleted" />
+      <el-table-column label="状态" align="center" prop="isDeleted" >
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isDeleted"
+            :active-value="0"
+            :inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -111,7 +120,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -136,7 +145,7 @@
 </template>
 
 <script>
-import { listType, getType, delType, addType, updateType } from "@/api/wallpaper/type";
+import { listType, getType, delType, addType, updateType,changeTypeStatus } from "@/api/wallpaper/type";
 
 export default {
   name: "Type",
@@ -190,6 +199,17 @@ export default {
         this.typeList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    // 分类状态修改
+    handleStatusChange(row) {
+      let text = row.isDeleted === '0' ? '启用' : '停用';
+      this.$modal.confirm('确认要"' + text + '""' + row.typeName + '"分类吗？').then(function () {
+        return changeTypeStatus(row.typeId, row.isDeleted);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function () {
+        row.isDeleted = row.isDeleted === "0" ? "1" : "0";
       });
     },
     // 取消按钮
