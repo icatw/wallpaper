@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/icatw/icatw-admin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-admin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-club/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-club/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-framework/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-generator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-generator/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-quartz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-quartz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-system/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-system/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-wallpaper/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/icatw-wallpaper/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/icatw/src/main/resources" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

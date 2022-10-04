@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="icatw-quartz" />
+        <module name="icatw-framework" />
+        <module name="icatw-system" />
+        <module name="icatw-common" />
+        <module name="icatw-generator" />
+        <module name="icatw-wallpaper" />
+        <module name="icatw-admin" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="icatw" target="1.8" />
+      <module name="icatw-admin" target="1.8" />
+      <module name="icatw-club" target="1.8" />
+      <module name="icatw-common" target="1.8" />
+      <module name="icatw-framework" target="1.8" />
+      <module name="icatw-generator" target="1.8" />
+      <module name="icatw-quartz" target="1.8" />
+      <module name="icatw-system" target="1.8" />
+      <module name="icatw-wallpaper" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

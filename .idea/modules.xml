@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Ruoyi-vue.iml" filepath="$PROJECT_DIR$/.idea/Ruoyi-vue.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw.iml" filepath="$PROJECT_DIR$/icatw/icatw.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw-admin/icatw-admin.iml" filepath="$PROJECT_DIR$/icatw/icatw-admin/icatw-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw-common/icatw-common.iml" filepath="$PROJECT_DIR$/icatw/icatw-common/icatw-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw-framework/icatw-framework.iml" filepath="$PROJECT_DIR$/icatw/icatw-framework/icatw-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw-generator/icatw-generator.iml" filepath="$PROJECT_DIR$/icatw/icatw-generator/icatw-generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw-quartz/icatw-quartz.iml" filepath="$PROJECT_DIR$/icatw/icatw-quartz/icatw-quartz.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw-system/icatw-system.iml" filepath="$PROJECT_DIR$/icatw/icatw-system/icatw-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icatw/icatw-wallpaper/icatw-wallpaper.iml" filepath="$PROJECT_DIR$/icatw/icatw-wallpaper/icatw-wallpaper.iml" />
+    </modules>
+  </component>
+</project>

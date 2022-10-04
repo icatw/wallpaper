@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icatw.wallpaper.mapper.WallpaperPaperMapper">
+    
+    <resultMap type="WallpaperPaper" id="WallpaperPaperResult">
+        <result property="paperId"    column="paper_id"    />
+        <result property="paperName"    column="paper_name"    />
+        <result property="paperUrl"    column="paper_url"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="isDeleted"    column="is_deleted"    />
+        <result property="typeId"    column="type_id"    />
+        <result property="paperSize"    column="paper_size"    />
+    </resultMap>
+
+    <sql id="selectWallpaperPaperVo">
+        select paper_id, paper_name, paper_url, create_time, update_time, is_deleted, type_id, paper_size from wallpaper_paper
+    </sql>
+
+    <select id="selectWallpaperPaperList" parameterType="WallpaperPaper" resultMap="WallpaperPaperResult">
+        <include refid="selectWallpaperPaperVo"/>
+        <where>  
+            <if test="paperName != null  and paperName != ''"> and paper_name like concat('%', #{paperName}, '%')</if>
+            <if test="paperUrl != null  and paperUrl != ''"> and paper_url = #{paperUrl}</if>
+            <if test="createTime != null "> and create_time &gt;= #{createTime}</if>
+            <if test="updateTime != null "> and update_time &lt;= #{updateTime}</if>
+            <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+            <if test="typeId != null "> and type_id = #{typeId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWallpaperPaperByPaperId" parameterType="Long" resultMap="WallpaperPaperResult">
+        <include refid="selectWallpaperPaperVo"/>
+        where paper_id = #{paperId}
+    </select>
+        
+    <insert id="insertWallpaperPaper" parameterType="WallpaperPaper" useGeneratedKeys="true" keyProperty="paperId">
+        insert into wallpaper_paper
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="paperName != null and paperName != ''">paper_name,</if>
+            <if test="paperUrl != null and paperUrl != ''">paper_url,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+            <if test="typeId != null">type_id,</if>
+            <if test="paperSize != null">paper_size,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="paperName != null and paperName != ''">#{paperName},</if>
+            <if test="paperUrl != null and paperUrl != ''">#{paperUrl},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+            <if test="typeId != null">#{typeId},</if>
+            <if test="paperSize != null">#{paperSize},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWallpaperPaper" parameterType="WallpaperPaper">
+        update wallpaper_paper
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="paperName != null and paperName != ''">paper_name = #{paperName},</if>
+            <if test="paperUrl != null and paperUrl != ''">paper_url = #{paperUrl},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="typeId != null">type_id = #{typeId},</if>
+            <if test="paperSize != null">paper_size = #{paperSize},</if>
+        </trim>
+        where paper_id = #{paperId}
+    </update>
+
+    <delete id="deleteWallpaperPaperByPaperId" parameterType="Long">
+        delete from wallpaper_paper where paper_id = #{paperId}
+    </delete>
+
+    <delete id="deleteWallpaperPaperByPaperIds" parameterType="String">
+        delete from wallpaper_paper where paper_id in 
+        <foreach item="paperId" collection="array" open="(" separator="," close=")">
+            #{paperId}
+        </foreach>
+    </delete>
+</mapper>
